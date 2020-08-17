@@ -1,0 +1,88 @@
+; Typora
+; SendInput {Text} 解决中文输入法问题
+
+#IfWinActive ahk_exe Typora.exe
+{
+    ; Ctrl+Alt+r 红色
+    ^!r::addFontColor("ff77de")
+
+    ; Ctrl+Alt+b 蓝色
+    ^!b::addFontColor("198fff")
+
+    ; Ctrl+Alt+m 居中
+    ^!m::center()
+
+    ; Ctrl+Down 向下移一行
+    ^Down::DownLine(0)
+
+    ; Ctrl+Alt+Down 复制到下一行
+    ^!Down::DownLine(1)
+
+    ; Ctrl+Up 向上移一行
+    ^Up::UpLine(0)
+
+    ; Ctrl+Alt+Up 复制到上一行
+    ^!Up::UpLine(1)
+}
+
+; 改变字体颜色
+addFontColor(color){
+    clipboard := "" ; 清空剪切板
+    Send {ctrl down}c{ctrl up} ;      复制      Ctrl+C 的表示方法
+    SendInput {TEXT}<font color='%color%'>
+    SendInput {ctrl down}v{ctrl up} ; 粘贴      Ctrl+V 的表示方法
+    If(clipboard = ""){
+        SendInput {TEXT}</font> ; Typora 在这不会自动补充
+    }else{
+        SendInput {TEXT}</ ; Typora中自动补全标签
+    }
+}
+
+; 文字居中
+center(){
+    clipboard := "" ; 清空剪切板
+    Send {ctrl down}c{ctrl up} ;      复制      Ctrl+C 的表示方法
+    SendInput {TEXT}<center>
+    SendInput {ctrl down}v{ctrl up} ; 粘贴      Ctrl+V 的表示方法
+    If(clipboard = ""){
+        SendInput {TEXT}</center> ; Typora 在这不会自动补充
+    }else{
+        SendInput {TEXT}</ ; Typora中自动补全标签
+    }
+}
+
+; 向下移动和复制
+DownLine(Num){
+    clipboard := "" ; 清空剪切板
+    Send {ctrl down}l{ctrl up} ;          选中一行      Ctrl+l 
+    Send {ctrl down}c{ctrl up} ;          复制          Ctrl+C
+    ; 向下移动
+    If(Num == "0"){
+        Send {BackSpace} ;                删除          
+        Send {Down} ;					  
+        SendInput {ctrl down}v{ctrl up} ; 粘贴          Ctrl+V
+    }
+    ; 向下复制
+    If(Num == "1"){
+        Send {Down} ;					  
+        SendInput {ctrl down}v{ctrl up} ; 粘贴          Ctrl+V
+    }
+}
+
+; 向上移动和复制
+UpLine(Num){
+    clipboard := "" ; 清空剪切板
+    Send {ctrl down}l{ctrl up} ;          选中一行      Ctrl+l 
+    Send {ctrl down}c{ctrl up} ;          复制          Ctrl+C
+    ; 向上移动
+    If(Num == "0"){                       
+        Send {BackSpace} ;   			  回退   
+        Send {Up} ;					        
+        SendInput {ctrl down}v{ctrl up} ; 粘贴          Ctrl+V
+    }
+    ; 向上复制
+    If(Num == "1"){
+        Send {Up}} ;					  
+        SendInput {ctrl down}v{ctrl up} ; 粘贴          Ctrl+V
+    }
+}
